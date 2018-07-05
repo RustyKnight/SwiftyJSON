@@ -1,3 +1,4 @@
+xcodebuild -version
 rm *.zip
 rm -rf Carthage
 if [ "$1" == "-debug" ]; then
