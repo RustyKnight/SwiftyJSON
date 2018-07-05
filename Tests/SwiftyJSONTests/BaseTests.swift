@@ -21,7 +21,7 @@
 //  THE SOFTWARE.
 
 import XCTest
-@testable import SwiftyJSON
+import SwiftyJSON
 
 class BaseTests: XCTestCase {
 
@@ -31,7 +31,7 @@ class BaseTests: XCTestCase {
 
         super.setUp()
 
-        if let file = Bundle(for:BaseTests.self).path(forResource: "Tests", ofType: "json") {
+        if let file = Bundle(for: BaseTests.self).path(forResource: "Tests", ofType: "json") {
             self.testData = try? Data(contentsOf: URL(fileURLWithPath: file))
         } else {
             XCTFail("Can't find the test JSON file")
@@ -65,7 +65,7 @@ class BaseTests: XCTestCase {
     func testCompare() {
         XCTAssertNotEqual(JSON("32.1234567890"), JSON(32.1234567890))
         let veryLargeNumber: UInt64 = 9876543210987654321
-        XCTAssertNotEqual(JSON("9876543210987654321"), JSON(NSNumber(value:veryLargeNumber)))
+        XCTAssertNotEqual(JSON("9876543210987654321"), JSON(NSNumber(value: veryLargeNumber)))
         XCTAssertNotEqual(JSON("9876543210987654321.12345678901234567890"), JSON(9876543210987654321.12345678901234567890))
         XCTAssertEqual(JSON("😊"), JSON("😊"))
         XCTAssertNotEqual(JSON("😱"), JSON("😁"))
@@ -260,17 +260,6 @@ class BaseTests: XCTestCase {
             return
         }
         XCTAssertNotNil(json.object)
-    }
-
-    func testNumberCompare() {
-        XCTAssertEqual(NSNumber(value: 888332), NSNumber(value:888332))
-        XCTAssertNotEqual(NSNumber(value: 888332.1), NSNumber(value:888332))
-        XCTAssertLessThan(NSNumber(value: 888332).doubleValue, NSNumber(value:888332.1).doubleValue)
-        XCTAssertGreaterThan(NSNumber(value: 888332.1).doubleValue, NSNumber(value:888332).doubleValue)
-        XCTAssertFalse(NSNumber(value: 1) == NSNumber(value:true))
-        XCTAssertFalse(NSNumber(value: 0) == NSNumber(value:false))
-        XCTAssertEqual(NSNumber(value: false), NSNumber(value:false))
-        XCTAssertEqual(NSNumber(value: true), NSNumber(value:true))
     }
 
     func testErrorThrowing() {

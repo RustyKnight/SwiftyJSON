@@ -1,4 +1,4 @@
-//  DictionaryTests.swift
+//  MutabilityTests.swift
 //
 //  Copyright (c) 2014 - 2017 Zigii Wong
 //
@@ -23,14 +23,16 @@
 import XCTest
 import SwiftyJSON
 
-class MutabilityTest: XCTestCase {
+class MutabilityTests: XCTestCase {
 
-    func testDictionaryJSONMutability() {
+    func testDictionaryMutability() {
         let dictionary: [String: Any] = [
             "string": "STRING",
             "number": 9823.212,
             "bool": true,
-            "empty": ["nothing"]
+            "empty": ["nothing"],
+            "foo": ["bar": ["1"]],
+            "bar": ["foo": ["1": "a"]]
         ]
 
         var json = JSON(dictionary)
@@ -53,9 +55,15 @@ class MutabilityTest: XCTestCase {
 
         json["new"] = JSON(["foo": "bar"])
         XCTAssertEqual(json["new"], ["foo": "bar"])
+
+        json["foo"]["bar"] = JSON([])
+        XCTAssertEqual(json["foo"]["bar"], [])
+
+        json["bar"]["foo"] = JSON(["2": "b"])
+        XCTAssertEqual(json["bar"]["foo"], ["2": "b"])
     }
 
-    func testArrayJSONMutability() {
+    func testArrayMutability() {
         let array: [Any] = ["1", "2", 3, true, []]
 
         var json = JSON(array)
@@ -102,5 +110,39 @@ class MutabilityTest: XCTestCase {
         boolean = JSON(false)
         XCTAssertEqual(boolean, false)
         XCTAssertEqual(boolean.boolValue, false)
+    }
+
+    func testArrayRemovability() {
+        let array = ["Test", "Test2", "Test3"]
+        var json = JSON(array)
+
+        json.arrayObject?.removeFirst()
+        XCTAssertEqual(false, json.arrayValue.isEmpty)
+        XCTAssertEqual(json.arrayValue, ["Test2", "Test3"])
+
+        json.arrayObject?.removeLast()
+        XCTAssertEqual(false, json.arrayValue.isEmpty)
+        XCTAssertEqual(json.arrayValue, ["Test2"])
+
+        json.arrayObject?.removeAll()
+        XCTAssertEqual(true, json.arrayValue.isEmpty)
+        XCTAssertEqual(JSON([]), json)
+    }
+
+    func testDictionaryRemovability() {
+        let dictionary: [String: Any] = ["key1": "Value1", "key2": 2, "key3": true]
+        var json = JSON(dictionary)
+
+        json.dictionaryObject?.removeValue(forKey: "key1")
+        XCTAssertEqual(false, json.dictionaryValue.isEmpty)
+        XCTAssertEqual(json.dictionaryValue, ["key2": 2, "key3": true])
+
+        json.dictionaryObject?.removeValue(forKey: "key3")
+        XCTAssertEqual(false, json.dictionaryValue.isEmpty)
+        XCTAssertEqual(json.dictionaryValue, ["key2": 2])
+
+        json.dictionaryObject?.removeAll()
+        XCTAssertEqual(true, json.dictionaryValue.isEmpty)
+        XCTAssertEqual(json.dictionaryValue, [:])
     }
 }
